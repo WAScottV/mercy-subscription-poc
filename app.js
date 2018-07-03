@@ -55,22 +55,21 @@ const main = async (obj) => {
   });
 }
 
-const getMessage = (args, cb) => {
+const getMessage = async (args, cb) => {
   const msgArray = [];
   const topic = args.classifier.topclass.toLowerCase();
 
   // call contenful cdn to retrieve messages and links.
-  client.getEntries({
+  const response = await client.getEntries({
     content_type: 'message',
     select: 'sys.id,fields.topic,fields.link,fields.phraseObject'
-  })
-  .then((response) => {
-    const { fields } = response.items.filter(r => r.fields.topic === topic)[0];
-    msgArray.push(fields.phraseObject.phrases[getRandomInt(fields.phraseObject.phrases.length - 1)]);
-    if (fields.link !== null) msgArray.push(fields.link);
-    console.log(msgArray);
-    cb(msgArray);
   });
+  const { fields } = response.items.filter(r => r.fields.topic === topic)[0];
+  console.log(fields);
+  // select random phrase from array
+  msgArray.push(fields.phraseObject.phrases[getRandomInt(fields.phraseObject.phrases.length - 1)]);
+  if (fields.link !== null) msgArray.push(fields.link);
+  cb(msgArray);
 };
 
 // Retrieve random number from 0 to max.
