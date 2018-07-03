@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/strategicmarket/mercymessaging-contentful#readme",
   "dependencies": {
-    "@xmachina/message": "^1.0.8"
+    "@xmachina/message": "^1.0.8",
+    "contentful": "^6.1.1",
+    "dotenv": "^6.0.0"
   },
   "devDependencies": {
     "nodemon": "^1.17.5"
