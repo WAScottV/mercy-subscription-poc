@@ -59,16 +59,31 @@ const getMessage = async (args, cb) => {
   const msgArray = [];
   const topic = args.classifier.topclass.toLowerCase();
 
-  // call contenful cdn to retrieve messages and links.
+  // call contenful cms to retrieve predefined content.
   const response = await client.getEntries({
     content_type: 'message',
     select: 'sys.id,fields.topic,fields.link,fields.phraseObject'
   });
-  const { fields } = response.items.filter(r => r.fields.topic === topic)[0];
-  console.log(fields);
-  // select random phrase from array
-  msgArray.push(fields.phraseObject.phrases[getRandomInt(fields.phraseObject.phrases.length - 1)]);
-  if (fields.link !== null) msgArray.push(fields.link);
+
+  //filter response by the topic provided.
+  const queryResult = response.items.filter(r => r.fields.topic === topic);
+  if (queryResult.length === 0) {
+    msgArray.push('I did not understand your request. Please contact support.');
+  } else {
+    const fields = queryResult[0].fields;
+
+    // *****experiment*****
+    for (var property in fields) {
+      if (fields.hasOwnProperty(property)) {
+        console.log(property);
+      }
+    }
+    // *****experiment*****
+
+    // select random phrase from array
+    msgArray.push(fields.phraseObject.phrases[getRandomInt(fields.phraseObject.phrases.length - 1)]);
+    if (fields.link !== null) msgArray.push(fields.link);    
+  }
   cb(msgArray);
 };
 
