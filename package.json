@@ -1,6 +1,6 @@
 {
   "name": "mercymessaging-contentful",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Second iteration of the Mercy Messaging platform. Utilizes Contenful CMS",
   "main": "index.js",
   "scripts": {
