@@ -12,7 +12,7 @@ http.createServer(async (req, res) => {
 
   req.on('end', async () => {
     try {
-      const reply = await main(JSON.parse(body));
+      const reply = await processRequest(JSON.parse(body));
       res.writeHead(200, {'Content-Type': 'application/json'});
       res.write(JSON.stringify(reply));
     } catch (error) {
@@ -25,7 +25,7 @@ http.createServer(async (req, res) => {
   
 }).listen(PORT);
 
-const main = async (obj) => {
+const processRequest = async (obj) => {
   return new Promise (function(resolve, reject) {
     try {
       let result = {};
@@ -79,12 +79,15 @@ const getMessageArray = async (args, cb) => {
     select: 'sys.id,fields'
   });
 
-  //filter response by the topic provided.
+  // TODO: come up with way of determining name of topic property dynamically
+  // filter response by the topic provided.
   const queryResult = response.items.filter(r => r.fields.topic === topic);
   if (queryResult.length === 0) {
     msgArray.push('I did not understand your request. Please contact support.');
   } else {
     const fields = queryResult[0].fields;
+    // don't include the topic field in the response.
+    delete fields.topic;
     chooseObjectProperities(fields);   
   }
   cb(msgArray);
