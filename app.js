@@ -43,7 +43,7 @@ const main = async (obj) => {
       result.reply = [];
   
       //retrieve data for reply array of message object.
-      getMessage(args, (response) => {
+      getMessageArray(args, (response) => {
         result.reply = response.slice();
         machine.setResponse(result);
         let newObj = machine.getWorkObj();
@@ -55,14 +55,28 @@ const main = async (obj) => {
   });
 }
 
-const getMessage = async (args, cb) => {
+const getMessageArray = async (args, cb) => {
   const msgArray = [];
   const topic = args.classifier.topclass.toLowerCase();
+
+  const chooseObjectProperities = (obj) => {
+    for (let property in obj) {
+      if (obj instanceof Array) {
+        msgArray.push(obj[getRandomInt(obj.length - 1)]);
+        return;
+      }
+      else if (typeof obj[property] === 'object') {
+        chooseObjectProperities(obj[property]);
+      } else {
+        msgArray.push(obj[property]);
+      }
+    }
+  };
 
   // call contenful cms to retrieve predefined content.
   const response = await client.getEntries({
     content_type: 'message',
-    select: 'sys.id,fields.topic,fields.link,fields.phraseObject'
+    select: 'sys.id,fields'
   });
 
   //filter response by the topic provided.
@@ -71,18 +85,7 @@ const getMessage = async (args, cb) => {
     msgArray.push('I did not understand your request. Please contact support.');
   } else {
     const fields = queryResult[0].fields;
-
-    // *****experiment*****
-    for (var property in fields) {
-      if (fields.hasOwnProperty(property)) {
-        console.log(property);
-      }
-    }
-    // *****experiment*****
-
-    // select random phrase from array
-    msgArray.push(fields.phraseObject.phrases[getRandomInt(fields.phraseObject.phrases.length - 1)]);
-    if (fields.link !== null) msgArray.push(fields.link);    
+    chooseObjectProperities(fields);   
   }
   cb(msgArray);
 };
