@@ -62,13 +62,13 @@ const getMessageArray = async (args, cb) => {
   const chooseObjectProperities = (obj) => {
     for (let property in obj) {
       if (obj instanceof Array) {
-        msgArray.push(obj[getRandomInt(obj.length - 1)]);
+        msgArray.push({msg: obj[getRandomInt(obj.length - 1)]});
         return;
       }
       else if (typeof obj[property] === 'object') {
         chooseObjectProperities(obj[property]);
       } else {
-        msgArray.push(obj[property]);
+        msgArray.push({msg: obj[property]});
       }
     }
   };
@@ -83,7 +83,7 @@ const getMessageArray = async (args, cb) => {
   // filter response by the topic provided.
   const queryResult = response.items.filter(r => r.fields.topic === topic);
   if (queryResult.length === 0) {
-    msgArray.push('I did not understand your request. Please contact support.');
+    msgArray.push({msg: 'I did not understand your request. Please contact support.'});
   } else {
     const fields = queryResult[0].fields;
     // don't include the topic field in the response.
