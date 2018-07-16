@@ -1,5 +1,5 @@
 const { createMachine } = require('@xmachina/message');
-const client = require('./contentful-client')
+const client = require('./contentful-client');
 const http = require('http');
 const { PORT = 3000 } = process.env;
 
