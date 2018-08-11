@@ -1,8 +1,10 @@
 const { createMachine } = require('@xmachina/message');
-const client = require('./contentful-client');
+const contentful = require('./contentful-client');
 const http = require('http');
+require('dotenv').config();
 const { PORT = 3000 } = process.env;
 
+contentful.createClient(process.env.SPACE_ID, process.env.ACCESS_TOKEN);
 http.createServer(async (req, res) => {
   let body = '';
 
@@ -74,13 +76,9 @@ const getMessageArray = async (args, cb) => {
   };
 
   // call contenful cms to retrieve predefined content.
-  const response = await client.getEntries({
-    content_type: 'message',
-    select: 'sys.id,fields'
-  });
+  const response = await contentful.getEntries('subscriptionBundle');
+  console.log(JSON.stringify(response,undefined,2));
 
-  // TODO: come up with way of determining name of topic property dynamically
-  // filter response by the topic provided.
   const queryResult = response.items.filter(r => r.fields.topic === topic);
   if (queryResult.length === 0) {
     msgArray.push({msg: 'I did not understand your request. Please contact support.'});

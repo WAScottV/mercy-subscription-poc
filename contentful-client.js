@@ -1,9 +1,23 @@
-require('dotenv').load();
 const contentful = require('contentful');
 
-// initialize contenful client.
-module.exports = contentful.createClient({
-  space: process.env.SPACE_ID,
-  environment: 'master',
-  accessToken: process.env.CMA_ACCESS_TOKEN
-});
+let client = null;
+const create = (spaceId, accessToken) => {
+  client = contentful.createClient({
+    space: spaceId,
+    environment: 'master',
+    accessToken: accessToken
+  });
+};
+
+const getEntries = async (contentType) => {
+  if (client === null) {
+    throw new Error('Must create client first');
+  }
+  return await client.getEntries({
+    content_type: contentType,
+    select: 'sys.id,fields'
+  });
+}
+
+module.exports.createClient = create;
+module.exports.getEntries = getEntries;
